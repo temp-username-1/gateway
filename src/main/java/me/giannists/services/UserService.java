@@ -16,7 +16,7 @@ public class UserService {
     @Autowired
     private TypicodeCallService typicodeCallService;
 
-    public ObjectNode getUserdata(int userId) {
+    public ObjectNode getUserEnriched(int userId) {
         CompletableFuture<ObjectNode> getUserByIdFuture =
                 CompletableFuture.supplyAsync(() -> typicodeCallService.getUserById(userId));
 

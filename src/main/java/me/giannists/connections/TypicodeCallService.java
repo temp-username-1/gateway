@@ -26,7 +26,7 @@ public class TypicodeCallService {
         try {
             return call.execute().body();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Communication Error", e);
         }
     }
 
