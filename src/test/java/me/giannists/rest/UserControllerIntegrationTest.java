@@ -9,8 +9,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -18,8 +18,8 @@ import static com.jayway.restassured.RestAssured.when;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Profile("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 public class UserControllerIntegrationTest {
 
     @Rule
@@ -37,7 +37,6 @@ public class UserControllerIntegrationTest {
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "text/plain")
                         .withBody(JsonHelper.getMockUserById().toString())));
-
 
         stubFor(get(urlEqualTo("/posts?userId=2"))
                 .willReturn(aResponse()
