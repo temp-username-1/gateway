@@ -1,19 +1,16 @@
 package me.giannists.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import me.giannists.connections.TypicodeCallService;
+import me.giannists.helpers.JsonHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -29,38 +26,25 @@ public class UserServiceTest {
     @Test
     public void getUserEnrichedShouldMergeContents() {
         // given
-        when(typicodeCallService.getUserById(anyInt())).thenReturn(getUserById());
-        when(typicodeCallService.getPostsByUserId(anyInt())).thenReturn(getPostsByUserId());
+        when(typicodeCallService.getUserById(anyInt()))
+                .thenReturn(JsonHelper.getMockUserById());
+        when(typicodeCallService.getPostsByUserId(anyInt()))
+                .thenReturn(JsonHelper.getMockPostsByUserId());
 
         // when
         ObjectNode mergedResult = userService.getUserEnriched(2);
 
         // then
-        JSONAssert.assertEquals(mergedResult, getUserById());
+        assertNotNull(mergedResult.get("posts"));
+        assertEquals(mergedResult.get("posts"), JsonHelper.getMockPostsByUserId());
+        assertIncludes(mergedResult, JsonHelper.getMockUserById());
     }
 
-    private ObjectNode getUserById() {
-        ObjectMapper mapper = new ObjectMapper();
-        FileInputStream mockUserResponse = null;
-        try {
-            mockUserResponse = new FileInputStream("src/test/resources/mockUserResponse.json");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        return mapper.valueToTree(mockUserResponse);
+    // Method that asserts that all object b's values and attributes are
+    // included in object a
+    private void assertIncludes(ObjectNode a, ObjectNode b) {
+        b.fieldNames().forEachRemaining(
+                fieldName -> assertEquals(a.get(fieldName), b.get(fieldName))
+        );
     }
-
-    private ArrayNode getPostsByUserId() {
-        ObjectMapper mapper = new ObjectMapper();
-        FileInputStream mockUserResponse = null;
-        try {
-            mockUserResponse = new FileInputStream("src/test/resources/mockPostsResponse.json");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        return mapper.valueToTree(mockUserResponse);
-    }
-
 }
